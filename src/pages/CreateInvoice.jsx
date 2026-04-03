@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const CreateInvoice = () => {
   const [client, setClient] = useState("");
@@ -29,9 +30,17 @@ const CreateInvoice = () => {
     (acc, item) => acc + item.quantity * item.price,
     0
   );
+  const navigate = useNavigate();
 
   return (
+    
     <div className="min-h-screen bg-gray-100 p-6">
+    <button
+        onClick={() => navigate("/")}
+        className="mb-4 text-blue-500"
+        >
+        ← Back
+    </button>
       
       <h1 className="text-2xl font-bold mb-6">Create Invoice</h1>
 
