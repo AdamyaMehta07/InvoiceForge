@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 
 const Dashboard = () => {
@@ -13,19 +12,22 @@ const Dashboard = () => {
       client: "Ankit Verma",
       amount: 1200,
     },
-    {
-        id:"INV-003",
-        client:"Adamya Mehta",
-        amount:13000
-    }
   ]);
+
+  // Delete Function
+  const handleDelete = (id) => {
+    const filteredInvoices = invoices.filter(
+      (invoice) => invoice.id !== id
+    );
+    setInvoices(filteredInvoices);
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">InvoiceForge</h1>
+        <h1 className="text-2xl font-bold">Invoices</h1>
         <button className="bg-blue-500 text-white px-4 py-2 rounded-xl hover:bg-blue-600">
           + New Invoice
         </button>
@@ -50,14 +52,25 @@ const Dashboard = () => {
               key={invoice.id}
               className="bg-white rounded-2xl shadow p-4 flex justify-between items-center"
             >
+              {/* Left Side */}
               <div>
                 <p className="font-semibold">{invoice.id}</p>
                 <p className="text-gray-500 text-sm">{invoice.client}</p>
               </div>
 
-              <p className="font-bold text-blue-500">
-                ₹{invoice.amount}
-              </p>
+              {/* Right Side */}
+              <div className="flex items-center gap-4">
+                <p className="font-bold text-blue-500">
+                  ₹{invoice.amount}
+                </p>
+
+                <button
+                  onClick={() => handleDelete(invoice.id)}
+                  className="text-red-500 hover:text-red-700 font-medium"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           ))
         )}
