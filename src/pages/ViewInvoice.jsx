@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import InvoicePreview from "../components/InvoicePreview";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+
+import MinimalTemplate from "../components/MinimalTemplate";
+import ModernTemplate from "../components/ModernTemplate";
+import CorporateTemplate from "../components/CorporateTemplate";
 
 const ViewInvoice = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const [invoice, setInvoice] = useState(null);
+  const [template, setTemplate] = useState("minimal"); 
 
   useEffect(() => {
     const storedInvoices =
@@ -25,6 +29,17 @@ const ViewInvoice = () => {
     return <p className="p-6">Loading...</p>;
   }
 
+  const renderTemplate = () => {
+    switch (template) {
+      case "modern":
+        return <ModernTemplate invoice={invoice} />;
+      case "corporate":
+        return <CorporateTemplate invoice={invoice} />;
+      default:
+        return <MinimalTemplate invoice={invoice} />;
+    }
+  };
+
   const handleDownload = async () => {
     const element = document.getElementById("invoice-preview");
 
@@ -34,7 +49,6 @@ const ViewInvoice = () => {
     }
 
     try {
-      // wait for render
       await new Promise((res) => setTimeout(res, 500));
 
       const canvas = await html2canvas(element, {
@@ -71,15 +85,29 @@ const ViewInvoice = () => {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Invoice Preview</h1>
 
-        <button
-          onClick={handleDownload}
-          className="bg-green-500 text-white px-4 py-2 rounded-xl cursor-pointer"
-        >
-          Download PDF
-        </button>
+        <div className="flex gap-4 items-center">
+          
+          <select
+            value={template}
+            onChange={(e) => setTemplate(e.target.value)}
+            className="border p-2 rounded-lg"
+          >
+            <option value="minimal">Minimal</option>
+            <option value="modern">Modern</option>
+            <option value="corporate">Corporate</option>
+          </select>
+
+          <button
+            onClick={handleDownload}
+            className="bg-green-500 text-white px-4 py-2 rounded-xl"
+          >
+            Download PDF
+          </button>
+
+        </div>
       </div>
 
-      <InvoicePreview invoice={invoice} />
+      {renderTemplate()}
     </div>
   );
 };

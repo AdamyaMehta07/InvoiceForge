@@ -1,15 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import InvoicePreview from "../components/InvoicePreview";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const CreateInvoice = () => {
   const navigate = useNavigate();
+  const { id } = useParams(); 
 
   const [client, setClient] = useState("");
   const [tax, setTax] = useState(0);
   const [items, setItems] = useState([
     { name: "", quantity: 1, price: 0 },
   ]);
+
+  // LOAD EXISTING INVOICE (EDIT MODE)
+  useEffect(() => {
+    if (id) {
+      const storedInvoices =
+        JSON.parse(localStorage.getItem("invoices")) || [];
+
+      const existing = storedInvoices.find(
+        (inv) => inv.id === id
+      );
+
+      if (existing) {
+        setClient(existing.client);
+        setItems(existing.items);
+        setTax(existing.tax || 0);
+      }
+    }
+  }, [id]);
 
   // Add item
   const addItem = () => {
@@ -28,48 +47,68 @@ const CreateInvoice = () => {
     setItems(updated);
   };
 
-  // Subtotal
+  // Calculations
   const subtotal = items.reduce(
     (acc, item) => acc + item.quantity * item.price,
     0
   );
 
-  // Tax amount
   const taxAmount = (subtotal * tax) / 100;
-
-  // Final total
   const total = subtotal + taxAmount;
 
-  // Save
+  //  SAVE (CREATE OR UPDATE)
   const handleSave = () => {
-    const newInvoice = {
-      id: "INV-" + Date.now(),
-      client,
-      items,
-      subtotal,
-      tax,
-      taxAmount,
-      total,
-    };
-
-    const existing =
+    const storedInvoices =
       JSON.parse(localStorage.getItem("invoices")) || [];
 
-    localStorage.setItem(
-      "invoices",
-      JSON.stringify([...existing, newInvoice])
-    );
+    if (id) {
+      // UPDATE
+      const updatedInvoices = storedInvoices.map((inv) =>
+        inv.id === id
+          ? {
+              ...inv,
+              client,
+              items,
+              subtotal,
+              tax,
+              taxAmount,
+              total,
+            }
+          : inv
+      );
+
+      localStorage.setItem(
+        "invoices",
+        JSON.stringify(updatedInvoices)
+      );
+    } else {
+      // CREATE
+      const newInvoice = {
+        id: "INV-" + Date.now(),
+        client,
+        items,
+        subtotal,
+        tax,
+        taxAmount,
+        total,
+      };
+
+      localStorage.setItem(
+        "invoices",
+        JSON.stringify([...storedInvoices, newInvoice])
+      );
+    }
 
     navigate("/");
   };
 
   const previewInvoice = {
-    id:'Preview',
+    id: id || "Preview",
     client,
     items,
     subtotal,
     taxAmount,
-    total
+    total,
   };
 
   return (
@@ -82,7 +121,9 @@ const CreateInvoice = () => {
         ← Back
       </button>
 
-      <h1 className="text-2xl font-bold mb-6">Create Invoice</h1>
+      <h1 className="text-2xl font-bold mb-6">
+        {id ? "Edit Invoice" : "Create Invoice"}
+      </h1>
 
       {/* Client */}
       <input
@@ -110,7 +151,11 @@ const CreateInvoice = () => {
               type="number"
               value={item.quantity}
               onChange={(e) =>
-                handleItemChange(index, "quantity", Number(e.target.value))
+                handleItemChange(
+                  index,
+                  "quantity",
+                  Number(e.target.value)
+                )
               }
               className="p-2 border rounded"
             />
@@ -118,7 +163,11 @@ const CreateInvoice = () => {
               type="number"
               value={item.price}
               onChange={(e) =>
-                handleItemChange(index, "price", Number(e.target.value))
+                handleItemChange(
+                  index,
+                  "price",
+                  Number(e.target.value)
+                )
               }
               className="p-2 border rounded"
             />
@@ -139,9 +188,11 @@ const CreateInvoice = () => {
         </button>
       </div>
 
-      {/* Tax Input */}
+      {/* Tax */}
       <div className="mb-6">
-        <label className="block mb-2 font-medium">Tax (%)</label>
+        <label className="block mb-2 font-medium">
+          Tax (%)
+        </label>
         <input
           type="number"
           value={tax}
@@ -162,12 +213,13 @@ const CreateInvoice = () => {
         onClick={handleSave}
         className="mt-6 bg-green-500 text-white px-6 py-3 rounded-xl"
       >
-        Save Invoice
+        {id ? "Update Invoice" : "Save Invoice"}
       </button>
 
+      {/* Preview */}
       <div className="mt-10">
         <h2 className="text-xl font-bold mb-4">Preview</h2>
-        <InvoicePreview invoice={previewInvoice}/>
+        <InvoicePreview invoice={previewInvoice} />
       </div>
     </div>
   );
