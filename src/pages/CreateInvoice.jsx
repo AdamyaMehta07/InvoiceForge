@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import InvoicePreview from "../components/InvoicePreview";
 import { useNavigate } from "react-router-dom";
 
 const CreateInvoice = () => {
@@ -60,6 +61,15 @@ const CreateInvoice = () => {
     );
 
     navigate("/");
+  };
+
+  const previewInvoice = {
+    id:'Preview',
+    client,
+    items,
+    subtotal,
+    taxAmount,
+    total
   };
 
   return (
@@ -154,6 +164,11 @@ const CreateInvoice = () => {
       >
         Save Invoice
       </button>
+
+      <div className="mt-10">
+        <h2 className="text-xl font-bold mb-4">Preview</h2>
+        <InvoicePreview invoice={previewInvoice}/>
+      </div>
     </div>
   );
 };
