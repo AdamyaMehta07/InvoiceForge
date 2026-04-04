@@ -5,6 +5,7 @@ const CreateInvoice = () => {
   const navigate = useNavigate();
 
   const [client, setClient] = useState("");
+  const [tax, setTax] = useState(0);
   const [items, setItems] = useState([
     { name: "", quantity: 1, price: 0 },
   ]);
@@ -26,27 +27,37 @@ const CreateInvoice = () => {
     setItems(updated);
   };
 
-  // Calculate total
-  const total = items.reduce(
+  // Subtotal
+  const subtotal = items.reduce(
     (acc, item) => acc + item.quantity * item.price,
     0
   );
 
-  // SAVE INVOICE
+  // Tax amount
+  const taxAmount = (subtotal * tax) / 100;
+
+  // Final total
+  const total = subtotal + taxAmount;
+
+  // Save
   const handleSave = () => {
     const newInvoice = {
       id: "INV-" + Date.now(),
       client,
-      amount: total,
       items,
+      subtotal,
+      tax,
+      taxAmount,
+      total,
     };
 
-    const existingInvoices =
+    const existing =
       JSON.parse(localStorage.getItem("invoices")) || [];
 
-    const updatedInvoices = [...existingInvoices, newInvoice];
-
-    localStorage.setItem("invoices", JSON.stringify(updatedInvoices));
+    localStorage.setItem(
+      "invoices",
+      JSON.stringify([...existing, newInvoice])
+    );
 
     navigate("/");
   };
@@ -118,15 +129,28 @@ const CreateInvoice = () => {
         </button>
       </div>
 
-      {/* Total */}
-      <div className="mb-6 font-bold text-lg">
-        Total: ₹{total}
+      {/* Tax Input */}
+      <div className="mb-6">
+        <label className="block mb-2 font-medium">Tax (%)</label>
+        <input
+          type="number"
+          value={tax}
+          onChange={(e) => setTax(Number(e.target.value))}
+          className="w-full p-3 rounded-xl border"
+        />
       </div>
 
-      {/* Save Button */}
+      {/* Summary */}
+      <div className="bg-white p-4 rounded-2xl shadow space-y-2">
+        <p>Subtotal: ₹{subtotal}</p>
+        <p>Tax: ₹{taxAmount}</p>
+        <p className="font-bold text-lg">Total: ₹{total}</p>
+      </div>
+
+      {/* Save */}
       <button
         onClick={handleSave}
-        className="bg-green-500 text-white px-6 py-3 rounded-xl"
+        className="mt-6 bg-green-500 text-white px-6 py-3 rounded-xl"
       >
         Save Invoice
       </button>
