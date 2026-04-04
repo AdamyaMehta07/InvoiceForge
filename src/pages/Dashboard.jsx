@@ -50,7 +50,8 @@ const Dashboard = () => {
           invoices.map((invoice) => (
             <div
               key={invoice.id}
-              className="bg-white rounded-2xl shadow p-4 flex justify-between items-center"
+              onClick={() => navigate(`/invoice/${invoice.id}`)}
+              className="bg-white rounded-2xl shadow p-4 flex justify-between items-center cursor-pointer hover:shadow-lg transition"
             >
               <div>
                 <p className="font-semibold">{invoice.id}</p>
@@ -59,14 +60,17 @@ const Dashboard = () => {
 
               <div className="flex items-center gap-4">
                 <p className="font-bold text-blue-500">
-                  ₹{invoice.amount}
+                  ₹{invoice.total}
                 </p>
 
                 <button
-                  onClick={() => handleDelete(invoice.id)}
+                  onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(invoice.id);
+                  }}
                   className="text-red-500 hover:text-red-700"
-                >
-                  Delete
+                  >
+                 Delete
                 </button>
               </div>
             </div>
