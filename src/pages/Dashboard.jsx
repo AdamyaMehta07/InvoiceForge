@@ -1,19 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const navigate = useNavigate();
 
-  const [invoices, setInvoices] = useState([
-    { id: "INV-001", client: "Rahul Sharma", amount: 5000 },
-    { id: "INV-002", client: "Ankit Verma", amount: 1200 },
-  ]);
+  const [invoices, setInvoices] = useState([]);
 
-  const handleDelete = (id) => {
-    const filteredInvoices = invoices.filter(
-      (invoice) => invoice.id !== id
-    );
-    setInvoices(filteredInvoices);
+  //load from local Storage
+  useEffect(()=>{
+    const storedInvoices =
+    JSON.parse(localStorage.getItem("invoices")) || [];
+    setInvoices(storedInvoices);
+  },[]);
+
+   const handleDelete = (id) => {
+    const updated = invoices.filter((inv) => inv.id !== id);
+    setInvoices(updated);
+    localStorage.setItem("invoices", JSON.stringify(updated));
   };
 
   return (
