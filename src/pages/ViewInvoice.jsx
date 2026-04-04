@@ -12,7 +12,7 @@ const ViewInvoice = () => {
   const navigate = useNavigate();
 
   const [invoice, setInvoice] = useState(null);
-  const [template, setTemplate] = useState("minimal"); 
+  const [template, setTemplate] = useState("minimal");
 
   useEffect(() => {
     const storedInvoices =
@@ -77,7 +77,7 @@ const ViewInvoice = () => {
       
       <button
         onClick={() => navigate("/")}
-        className="mb-4 text-blue-500"
+        className="mb-4 text-blue-500 hover:underline"
       >
         ← Back
       </button>
@@ -90,7 +90,7 @@ const ViewInvoice = () => {
           <select
             value={template}
             onChange={(e) => setTemplate(e.target.value)}
-            className="border p-2 rounded-lg"
+            className="border p-2 rounded-lg shadow-sm"
           >
             <option value="minimal">Minimal</option>
             <option value="modern">Modern</option>
@@ -99,7 +99,7 @@ const ViewInvoice = () => {
 
           <button
             onClick={handleDownload}
-            className="bg-green-500 text-white px-4 py-2 rounded-xl"
+            className="bg-green-500 hover:bg-green-600 transition text-white px-4 py-2 rounded-xl shadow"
           >
             Download PDF
           </button>

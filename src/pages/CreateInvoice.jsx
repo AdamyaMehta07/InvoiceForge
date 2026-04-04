@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const CreateInvoice = () => {
   const navigate = useNavigate();
-  const { id } = useParams(); 
+  const { id } = useParams();
 
   const [client, setClient] = useState("");
   const [tax, setTax] = useState(0);
@@ -12,7 +12,7 @@ const CreateInvoice = () => {
     { name: "", quantity: 1, price: 0 },
   ]);
 
-  // LOAD EXISTING INVOICE (EDIT MODE)
+  // Load existing invoice (edit mode)
   useEffect(() => {
     if (id) {
       const storedInvoices =
@@ -56,13 +56,13 @@ const CreateInvoice = () => {
   const taxAmount = (subtotal * tax) / 100;
   const total = subtotal + taxAmount;
 
-  //  SAVE (CREATE OR UPDATE)
+  // Save
   const handleSave = () => {
     const storedInvoices =
       JSON.parse(localStorage.getItem("invoices")) || [];
 
     if (id) {
-      // UPDATE
+      // Update
       const updatedInvoices = storedInvoices.map((inv) =>
         inv.id === id
           ? {
@@ -82,7 +82,7 @@ const CreateInvoice = () => {
         JSON.stringify(updatedInvoices)
       );
     } else {
-      // CREATE
+      // Create
       const newInvoice = {
         id: "INV-" + Date.now(),
         client,
@@ -116,7 +116,7 @@ const CreateInvoice = () => {
       
       <button
         onClick={() => navigate("/")}
-        className="mb-4 text-blue-500"
+        className="mb-4 text-blue-500 hover:underline"
       >
         ← Back
       </button>
@@ -131,7 +131,7 @@ const CreateInvoice = () => {
         value={client}
         onChange={(e) => setClient(e.target.value)}
         placeholder="Client Name"
-        className="w-full p-3 mb-6 rounded-xl border"
+        className="w-full p-3 mb-6 rounded-xl border shadow-sm"
       />
 
       {/* Items */}
@@ -173,7 +173,7 @@ const CreateInvoice = () => {
             />
             <button
               onClick={() => removeItem(index)}
-              className="text-red-500"
+              className="text-red-500 hover:text-red-700"
             >
               Remove
             </button>
@@ -182,7 +182,7 @@ const CreateInvoice = () => {
 
         <button
           onClick={addItem}
-          className="bg-blue-500 text-white px-4 py-2 rounded-xl"
+          className="bg-blue-500 hover:bg-blue-600 transition text-white px-4 py-2 rounded-xl shadow"
         >
           + Add Item
         </button>
@@ -197,7 +197,7 @@ const CreateInvoice = () => {
           type="number"
           value={tax}
           onChange={(e) => setTax(Number(e.target.value))}
-          className="w-full p-3 rounded-xl border"
+          className="w-full p-3 rounded-xl border shadow-sm"
         />
       </div>
 
@@ -211,7 +211,7 @@ const CreateInvoice = () => {
       {/* Save */}
       <button
         onClick={handleSave}
-        className="mt-6 bg-green-500 text-white px-6 py-3 rounded-xl"
+        className="mt-6 bg-green-500 hover:bg-green-600 transition text-white px-6 py-3 rounded-xl shadow"
       >
         {id ? "Update Invoice" : "Save Invoice"}
       </button>
